@@ -17,7 +17,7 @@ class UserServiceTest {
     @Test
     void updateAllOrNothing() {
         try {
-            userService.upgradleLevels();
+            userService.upgradeLevels();
             fail("Fail upgradeLevels");
         } catch (RuntimeException e) {
 

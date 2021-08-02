@@ -17,18 +17,12 @@ public final class UserService {
         this.userDao = userDao;
     }
 
-    public void upgradleLevels() {
+    public void upgradeLevels() {
         TransactionStatus status = transactionManager.getTransaction(
             new DefaultTransactionDefinition());
 
         try {
-            List<User> users = userDao.findAll();
-            for(User u : users) {
-                if(u.getId() == 3) {
-                    throw new IllegalStateException();
-                }
-                upgradleLevel(u);
-            }
+            upgradeLevelsInternal();
 
             transactionManager.commit(status);
         } catch (Exception e) {
@@ -37,7 +31,17 @@ public final class UserService {
         }
     }
 
-    private void upgradleLevel(User user) {
+    private void upgradeLevelsInternal() {
+        List<User> users = userDao.findAll();
+        for(User u : users) {
+            if(u.getId() == 3) {
+                throw new IllegalStateException();
+            }
+            upgradeLevel(u);
+        }
+    }
+
+    private void upgradeLevel(User user) {
         user.upgradleLevel();
         userDao.update(user);
     }
