@@ -17,7 +17,7 @@ public class AppConfig {
 
     @Bean
     public UserService userService(UserDao userDao) {
-        return new UserService(userDao);
+        return new UserService(dataSource(), userDao);
     }
 
     @Bean

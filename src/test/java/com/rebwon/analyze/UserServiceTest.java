@@ -15,11 +15,11 @@ class UserServiceTest {
     @Autowired UserDao userDao;
 
     @Test
-    void updateAllOrNothing() {
+    void updateAllOrNothing() throws Exception {
         try {
             userService.upgradleLevels();
             fail("Fail upgradeLevels");
-        } catch (IllegalStateException e) {
+        } catch (RuntimeException e) {
 
         }
 
@@ -29,8 +29,8 @@ class UserServiceTest {
         User user2 = users.get(1);
         User user3 = users.get(2);
 
-        assertThat(user1.getLevel()).isEqualTo(2);
-        assertThat(user2.getLevel()).isEqualTo(2);
+        assertThat(user1.getLevel()).isEqualTo(1);
+        assertThat(user2.getLevel()).isEqualTo(1);
         assertThat(user3.getLevel()).isEqualTo(1);
     }
 }
