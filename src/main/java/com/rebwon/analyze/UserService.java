@@ -3,7 +3,11 @@ package com.rebwon.analyze;
 import java.sql.Connection;
 import java.util.List;
 import javax.sql.DataSource;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 public final class UserService {
@@ -17,13 +21,12 @@ public final class UserService {
     }
 
     public void upgradleLevels() throws Exception {
-        TransactionSynchronizationManager.initSynchronization();
-        Connection connection = DataSourceUtils.getConnection(dataSource);
-        connection.setAutoCommit(false);
+        PlatformTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
+        TransactionStatus status = transactionManager.getTransaction(
+            new DefaultTransactionDefinition());
 
         try {
             List<User> users = userDao.findAll();
-
             for(User u : users) {
                 if(u.getId() == 3) {
                     throw new IllegalStateException();
@@ -31,14 +34,10 @@ public final class UserService {
                 upgradleLevel(u);
             }
 
-            connection.commit();
+            transactionManager.commit(status);
         } catch (Exception e) {
-            connection.rollback();
+            transactionManager.rollback(status);
             throw new RuntimeException(e);
-        } finally {
-            DataSourceUtils.releaseConnection(connection, dataSource);
-            TransactionSynchronizationManager.unbindResource(this.dataSource);
-            TransactionSynchronizationManager.clearSynchronization();
         }
     }
 
