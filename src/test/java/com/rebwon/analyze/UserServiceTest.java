@@ -15,7 +15,7 @@ class UserServiceTest {
     @Autowired UserDao userDao;
 
     @Test
-    void updateAllOrNothing() throws Exception {
+    void updateAllOrNothing() {
         try {
             userService.upgradleLevels();
             fail("Fail upgradeLevels");

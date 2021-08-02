@@ -1,27 +1,23 @@
 package com.rebwon.analyze;
 
-import java.sql.Connection;
 import java.util.List;
-import javax.sql.DataSource;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 public final class UserService {
 
-    private DataSource dataSource;
+    private PlatformTransactionManager transactionManager;
     private UserDao userDao;
 
-    public UserService(DataSource dataSource, UserDao userDao) {
-        this.dataSource = dataSource;
+    public UserService(
+        PlatformTransactionManager transactionManager,
+        UserDao userDao) {
+        this.transactionManager = transactionManager;
         this.userDao = userDao;
     }
 
-    public void upgradleLevels() throws Exception {
-        PlatformTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
+    public void upgradleLevels() {
         TransactionStatus status = transactionManager.getTransaction(
             new DefaultTransactionDefinition());
 
