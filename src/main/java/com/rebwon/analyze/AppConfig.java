@@ -19,7 +19,12 @@ public class AppConfig {
 
     @Bean
     public UserService userService(UserDao userDao) {
-        return new UserServiceProxy(platformTransactionManager(), new UserServiceImpl(userDao));
+        return new UserServiceProxy(platformTransactionManager(), new UserLogginService(new UserServiceImpl(userDao)));
+    }
+
+    @Bean
+    public UserServiceInheritance userServiceInheritance(UserDao userDao) {
+        return new UserExtendsService(userDao, platformTransactionManager());
     }
 
     @Bean

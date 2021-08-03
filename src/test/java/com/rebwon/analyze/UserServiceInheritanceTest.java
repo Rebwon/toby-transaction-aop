@@ -9,15 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class UserServiceTest {
+class UserServiceInheritanceTest {
 
-    @Autowired UserService userService;
+    @Autowired UserServiceInheritance userServiceInheritance;
     @Autowired UserDao userDao;
 
     @Test
     void updateAllOrNothing() {
         try {
-            userService.upgradeLevels();
+            userServiceInheritance.upgradeLevels();
             fail("Fail upgradeLevels");
         } catch (RuntimeException e) {
 
@@ -32,22 +32,5 @@ class UserServiceTest {
         assertThat(user1.getLevel()).isEqualTo(1);
         assertThat(user2.getLevel()).isEqualTo(1);
         assertThat(user3.getLevel()).isEqualTo(1);
-    }
-
-    // 이 테스트는 UserServiceImpl에 if(id==3) 절을 주석처리하고 테스트 해볼 것.
-    // 트랜잭션 처리가 정상적으로 커밋되고 로깅 작업이 잘 처리되는지 확인하기 위한 테스트.
-    @Test
-    void updateAllOrNothingUsingLogging() {
-        userService.upgradeLevels();
-
-        List<User> users = userDao.findAll();
-
-        User user1 = users.get(0);
-        User user2 = users.get(1);
-        User user3 = users.get(2);
-
-        assertThat(user1.getLevel()).isEqualTo(2);
-        assertThat(user2.getLevel()).isEqualTo(2);
-        assertThat(user3.getLevel()).isEqualTo(2);
     }
 }
