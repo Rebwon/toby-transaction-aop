@@ -3,16 +3,19 @@ package com.rebwon.analyze;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.lang.reflect.Proxy;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @SpringBootTest
 class UserServiceTest {
 
     @Autowired UserService userService;
     @Autowired UserDao userDao;
+    @Autowired PlatformTransactionManager transactionManager;
 
     @Test
     void updateAllOrNothing() {
@@ -39,6 +42,25 @@ class UserServiceTest {
     @Test
     void updateAllOrNothingUsingLogging() {
         userService.upgradeLevels();
+
+        List<User> users = userDao.findAll();
+
+        User user1 = users.get(0);
+        User user2 = users.get(1);
+        User user3 = users.get(2);
+
+        assertThat(user1.getLevel()).isEqualTo(2);
+        assertThat(user2.getLevel()).isEqualTo(2);
+        assertThat(user3.getLevel()).isEqualTo(2);
+    }
+
+    // JDK Dynamic Proxy를 사용한 테스트
+    @Test
+    void updateAllOrNothingUsingJDKDynamicProxy() {
+        UserService txUserService = (UserService) Proxy.newProxyInstance(getClass().getClassLoader(),
+            new Class[]{UserService.class},
+            new TransactionHandler(userService, transactionManager, "upgradeLevels"));
+        txUserService.upgradeLevels();
 
         List<User> users = userDao.findAll();
 
