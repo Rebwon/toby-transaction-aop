@@ -3,6 +3,7 @@ package com.rebwon.analyze;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -21,11 +22,16 @@ public final class TransactionHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        if (method.getName().startsWith(this.pattern)) {
+        String methodName = method.getName();
+        if (isSatisfiedBy(method) || methodName.startsWith(pattern)) {
             return invokeTransaction(method, args);
         } else {
             return method.invoke(target, args);
         }
+    }
+
+    private boolean isSatisfiedBy(Method method) {
+        return Arrays.stream(method.getDeclaredAnnotations()).anyMatch(annotation -> annotation.annotationType().isAnnotationPresent(Transactional.class));
     }
 
     private Object invokeTransaction(Method method, Object[] args) throws Throwable {

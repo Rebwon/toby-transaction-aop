@@ -59,7 +59,7 @@ class UserServiceTest {
     void updateAllOrNothingUsingJDKDynamicProxy() {
         UserService txUserService = (UserService) Proxy.newProxyInstance(getClass().getClassLoader(),
             new Class[]{UserService.class},
-            new TransactionHandler(userService, transactionManager, "upgradeLevels"));
+            new TransactionHandler(userService, transactionManager, ""));
         txUserService.upgradeLevels();
 
         List<User> users = userDao.findAll();

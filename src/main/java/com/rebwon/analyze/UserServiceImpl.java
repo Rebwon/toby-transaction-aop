@@ -10,6 +10,7 @@ public final class UserServiceImpl implements UserService {
         this.userDao = userDao;
     }
 
+    @Transactional
     public void upgradeLevels() {
         List<User> users = userDao.findAll();
         for(User u : users) {
