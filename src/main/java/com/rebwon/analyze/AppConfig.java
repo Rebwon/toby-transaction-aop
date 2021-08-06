@@ -18,8 +18,14 @@ public class AppConfig {
     }
 
     @Bean
-    public UserService userService(UserDao userDao) {
-        return new UserServiceImpl(userDao);
+    public UserService userService(UserDao userDao) throws Exception {
+        JdkDynamicProxyBeanFactory beanFactory = new JdkDynamicProxyBeanFactory(
+            new UserServiceImpl(userDao),
+            platformTransactionManager(),
+            "",
+            UserService.class
+        );
+        return (UserService) beanFactory.getObject();
     }
 
 //    @Bean
