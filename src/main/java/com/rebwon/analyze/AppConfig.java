@@ -3,9 +3,9 @@ package com.rebwon.analyze;
 import javax.sql.DataSource;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.Pointcut;
-import org.springframework.aop.framework.ProxyFactoryBean;
+import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
-import org.springframework.aop.support.NameMatchMethodPointcut;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -29,8 +29,9 @@ public class AppConfig {
 
     @Bean
     public Pointcut transactionPointcut() {
-        NameMatchMethodPointcut pointcut = new NameMatchMethodPointcut();
-        pointcut.addMethodName("upgrade*");
+        NameMatchClassMethodPointcut pointcut = new NameMatchClassMethodPointcut();
+        pointcut.setMappedName("upgrade*");
+        pointcut.setMappedClassName("*ServiceImpl");
         return pointcut;
     }
 
@@ -40,11 +41,13 @@ public class AppConfig {
     }
 
     @Bean
-    public UserService userService(UserDao userDao) throws Exception {
-        ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean();
-        proxyFactoryBean.setTarget(new UserServiceImpl(userDao));
-        proxyFactoryBean.addAdvisor(transactionAdvisor());
-        return (UserService) proxyFactoryBean.getObject();
+    public BeanPostProcessor defaultAdvisorAutoProxyCreator() {
+        return new DefaultAdvisorAutoProxyCreator();
+    }
+
+    @Bean
+    public UserService userService(UserDao userDao) {
+        return new UserServiceImpl(userDao);
     }
 
 //    @Bean

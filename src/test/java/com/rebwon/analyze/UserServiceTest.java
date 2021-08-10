@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.Proxy;
 import java.util.List;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,8 +38,14 @@ class UserServiceTest {
         assertThat(user3.getLevel()).isEqualTo(1);
     }
 
+    @Test
+    void advisorAutoProxyCreator() {
+        assertThat(userService).isInstanceOf(Proxy.class);
+    }
+
     // 이 테스트는 UserServiceImpl에 if(id==3) 절을 주석처리하고 테스트 해볼 것.
     // 트랜잭션 처리가 정상적으로 커밋되고 로깅 작업이 잘 처리되는지 확인하기 위한 테스트.
+    @Disabled
     @Test
     void updateAllOrNothingUsingLogging() {
         userService.upgradeLevels();
@@ -55,6 +62,7 @@ class UserServiceTest {
     }
 
     // JDK Dynamic Proxy를 사용한 테스트
+    @Disabled
     @Test
     void updateAllOrNothingUsingJDKDynamicProxy() {
         UserService txUserService = (UserService) Proxy.newProxyInstance(getClass().getClassLoader(),
